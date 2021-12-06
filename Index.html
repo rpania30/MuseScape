@@ -1,1 +1,156 @@
+<html>
+    <head>
+        <title>MuseScape</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgb(30, 29, 36);
+                color: white;
+            }
+            .Heading{
+                margin-top: 50px;
+            }
+            .Reading{
+                border: white solid;
+                border-radius: 10px;
+                margin-top: 50px;
+            }
+            .song{
+                margin-bottom: 13px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 class = "Heading"><center>MuseScape</center></h1>
+        <div id="overlay" >
+            <div class="container overlay_cont ">
+                <div class="form-group">
+                    <label for="my-input">Title</label>
+                    <input id="Title" class="form-control" type="text" name="Title" required>
+                </div>
+                <div class="form-group">
+                    <label for="my-input">Artist</label>
+                    <input id="Artist" class="form-control" type="text" name="Artist" required>
+                </div>
+                <div class="form-group">
+                    <label for="my-input">Album</label>
+                    <input id="Album" class="form-control" type="text" name="Album" required>
+                </div>
+                <div class="form-group">
+                    <label for="my-input">Genre</label>
+                    <input id="Genre" class="form-control" type="text" name="Genre">
+                </div>
+                <br>
+                <input name="uploadbtn"  class="btn btn-success" type="button" value="Upload" id = "upload">
+            </div>
+        </div>
+        <div class="container Reading " id="content_body" onshow="read();">
+            <div class="row song" style="font-size: 1rem;">
+                <div class="col">
+                    Title
+                </div>
+                <div class="col">
+                    Artist
+                </div>
+                <div class="col">
+                    Album
+                </div>
+                <div class="col">
+                    Genre
+                </div>
+            </div>
+            
+            <hr style="background-color: white;">
+            <div id="listOfSongs">
+                
+            </div>
+        </div>
+        <script type="module">
+            
+            //Back4App
+            Parse.initialize("zwEa3z3i85UTrkhzzLDXALNbMjiX9Rq1R9lVXQSX", "4rKuFaItNGyr3Gur70guE6aAZpfUKunoB7SmZL0Y"); //PASTE HERE YOUR Back4App APPLICATION ID AND YOUR JavaScript KEY
+            Parse.serverURL = "https://parseapi.back4app.com/";
+            
+            var Songs = Parse.Object.extend("Songs");
+            var Title;
+            var Artist;
+            var Album;
+            var Genre;
+            var counter;       
+            document.getElementById("upload").addEventListener("click",function(e){
+                console.log("it works!!");
+                create();
+            }) 
 
+            function display_song(title, year, genre, artist, div){
+                var maindiv = document.createElement("div");
+                maindiv.className = "row song";
+
+                var tit = document.createElement("div");
+                tit.className = "col";
+                tit.innerText = title;
+
+                var yea = document.createElement("div");
+                yea.className = "col";
+                yea.innerText = year;
+
+                var gen = document.createElement("div");
+                gen.className = "col";
+                gen.innerText = genre;
+
+                var arti = document.createElement("div");
+                arti.className = "col";
+                arti.innerText = artist;
+
+                maindiv.appendChild(tit);
+                maindiv.appendChild(yea);
+                maindiv.appendChild(gen);
+                maindiv.appendChild(arti);
+                document.getElementById("listOfSongs").appendChild(maindiv);
+            }
+            
+            read();
+
+            async function read() {
+                let Songs = Parse.Object.extend("Songs");
+                let songs = new Parse.Query(Songs);
+
+                let response = await songs.find();
+                response.forEach(song => {
+                    display_song(song.get('Title'),song.get('Artist'),song.get('Album'),song.get('Genre'),"content_body");
+                });
+            }
+            function getData() {
+                let Songs = Parse.Object.extend("Songs");
+                let songs = new Parse.Query(Songs);
+
+                let response = await songs.find();
+                counter = response.length;
+            }
+            function create() {
+                var mysong = new Songs();
+                mysong.save({
+                    Title: document.getElementById("Title").value,
+                    Artist: document.getElementById("Artist").value,
+                    Album: document.getElementById("Album").value,
+                    Genre: document.getElementById("Genre").value,
+                    Id: counter
+                }).then(function(song){
+                    console.log('Song created successfully');
+                    document.location.reload(true);
+                }).catch(function(error){
+                    console.log('Error: ' + error.message);
+                }); 
+            }
+
+          </script>
+          <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+</html>
